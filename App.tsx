@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, {useEffect} from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -25,12 +25,22 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import {NativeModules} from 'react-native';
+const {ARModule} = NativeModules;
+
+// Call the AR Module to show AR view
+console.log(ARModule);
+
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
 function Section({children, title}: SectionProps): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'dark';
+
+  useEffect(() => {
+    ARModule.startARSession();
+  }, []);
   return (
     <View style={styles.sectionContainer}>
       <Text
