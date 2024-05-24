@@ -10,9 +10,11 @@ import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.google.ar.core.AugmentedFace
+import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.ArSceneView
 import com.google.ar.sceneform.Sceneform
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.rendering.Texture
 import com.google.ar.sceneform.ux.ArFrontFacingFragment
 import com.google.ar.sceneform.ux.AugmentedFaceNode
@@ -53,7 +55,7 @@ class ARViewManager : SimpleViewManager<ArSceneView>() {
     }
 
     private fun initializeArSceneView() {
-        arSceneView.cameraStreamRenderPriority = Renderable.RENDER_PRIORITY_FIRST
+        arSceneView.setCameraStreamRenderPriority(Renderable.RENDER_PRIORITY_FIRST)
         arFragment.setOnAugmentedFaceUpdateListener(this::onAugmentedFaceTrackingUpdate)
         loadModels()
         loadTextures()
@@ -89,7 +91,7 @@ class ARViewManager : SimpleViewManager<ArSceneView>() {
         val existingFaceNode = facesNodes[augmentedFace]
 
         when (augmentedFace.trackingState) {
-            AugmentedFace.TrackingState.TRACKING -> {
+            TrackingState.TRACKING -> {
                 if (existingFaceNode == null) {
                     val faceNode = AugmentedFaceNode(augmentedFace)
                     val modelInstance = faceNode.setFaceRegionsRenderable(faceModel)
@@ -100,7 +102,7 @@ class ARViewManager : SimpleViewManager<ArSceneView>() {
                     facesNodes[augmentedFace] = faceNode
                 }
             }
-            AugmentedFace.TrackingState.STOPPED -> {
+            TrackingState.STOPPED -> {
                 if (existingFaceNode != null) {
                     arSceneView.scene.removeChild(existingFaceNode)
                     facesNodes.remove(augmentedFace)
