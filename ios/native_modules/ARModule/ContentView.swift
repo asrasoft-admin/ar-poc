@@ -220,29 +220,39 @@ struct ARViewContainer: UIViewRepresentable {
         }
     }
     
-    func addBenchBg(arView: ARView) {
-        if let backgroundScene = try? Entity.load(named: "bench") {
-            let backgroundAnchor = AnchorEntity(world: SIMD3(x: 0, y: 0, z: -1.0))
-            backgroundScene.name = "backgroundEntity"
-            backgroundScene.setScale(SIMD3(x: 1, y: 1, z: 1), relativeTo: backgroundAnchor)
-            backgroundAnchor.addChild(backgroundScene)
-            arView.scene.anchors.append(backgroundAnchor)
-        } else {
-            print("Failed to load background model")
-        }
-    }
-    
-    func addTgt(arView: ARView) {
-        if let backgroundScene = try? Entity.load(named: "tgt") {
-            let backgroundAnchor = AnchorEntity(world: SIMD3(x: 0, y: 0, z: -1.0))
-            backgroundScene.name = "tgtEntity"
-            backgroundScene.setScale(SIMD3(x: 1, y: 1, z: 1), relativeTo: backgroundAnchor)
-            backgroundAnchor.addChild(backgroundScene)
-            arView.scene.anchors.append(backgroundAnchor)
-        } else {
-            print("Failed to load background model")
-        }
-    }
+  func addBenchBg(arView: ARView) {
+      guard let url = Bundle.main.url(forResource: "bench", withExtension: "usdz", subdirectory: "Preview Content") else {
+          print("Failed to find bench.usdz in the app bundle")
+          return
+      }
+      do {
+          let backgroundScene = try Entity.load(contentsOf: url)
+          let backgroundAnchor = AnchorEntity(world: SIMD3(x: 0, y: 0, z: -1.0))
+          backgroundScene.name = "backgroundEntity"
+          backgroundScene.setScale(SIMD3(x: 1, y: 1, z: 1), relativeTo: backgroundAnchor)
+          backgroundAnchor.addChild(backgroundScene)
+          arView.scene.anchors.append(backgroundAnchor)
+      } catch {
+          print("Failed to load background model: \(error.localizedDescription)")
+      }
+  }
+
+  func addTgt(arView: ARView) {
+      guard let url = Bundle.main.url(forResource: "tgt", withExtension: "usdz", subdirectory: "Preview Content") else {
+          print("Failed to find target.usdz in the app bundle")
+          return
+      }
+      do {
+          let targetScene = try Entity.load(contentsOf: url)
+          let targetAnchor = AnchorEntity(world: SIMD3(x: 0, y: 0, z: -1.0))
+          targetScene.name = "tgtEntity"
+          targetScene.setScale(SIMD3(x: 1, y: 1, z: 1), relativeTo: targetAnchor)
+          targetAnchor.addChild(targetScene)
+          arView.scene.anchors.append(targetAnchor)
+      } catch {
+          print("Failed to load target model: \(error.localizedDescription)")
+      }
+  }
     
     @MainActor func addGlasses(arView: ARView) {
         if let faceScene = try? Glasses.loadFace() {
