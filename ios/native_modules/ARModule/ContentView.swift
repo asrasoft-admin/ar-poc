@@ -274,6 +274,8 @@ struct ARViewContainer: UIViewRepresentable {
             arView.session.run(arConfig)
         } else {
             let arConfig = ARWorldTrackingConfiguration()
+            arConfig.frameSemantics = .personSegmentationWithDepth
+            arConfig.userFaceTrackingEnabled = true
             arConfig.planeDetection = [.horizontal, .vertical]
             arView.session.run(arConfig)
         }
