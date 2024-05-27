@@ -1,117 +1,110 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
   SafeAreaView,
   ScrollView,
   StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
   View,
+  PermissionsAndroid,
+  Platform,
+  useColorScheme,
+  UIManager,
+  findNodeHandle,
+  Text,
 } from 'react-native';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {requireNativeComponent} from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const ARView = requireNativeComponent('ARViewManager');
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+const requestCameraPermission = async () => {
+  try {
+    if (Platform.OS === 'android') {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.CAMERA,
+        {
+          title: 'Camera Permission',
+          message: 'This app needs access to your camera to function properly.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the camera');
+      } else {
+        console.log('Camera permission denied');
+      }
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+};
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const Section: React.FC = () => {
+  const arViewRef = useRef(null);
+  const [view, setView] = useState(false);
+
+  useEffect(() => {
+    if (arViewRef.current) {
+      setView(true);
+      console.log(arViewRef);
+      UIManager.dispatchViewManagerCommand(
+        findNodeHandle(arViewRef.current),
+        UIManager.getViewManagerConfig('ARViewManager').Commands.create,
+        [findNodeHandle(arViewRef.current)],
+      );
+    }
+  }, []);
+
   return (
     <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+      <ARView ref={arViewRef} />
+      <Text>Hello</Text>
     </View>
   );
-}
+};
 
-function App(): React.JSX.Element {
+const App: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
+
+  useEffect(() => {
+    requestCameraPermission();
+  }, []);
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
+    <SafeAreaView style={[backgroundStyle, styles.container]}>
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
       />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <Section />
       </ScrollView>
     </SafeAreaView>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  scrollView: {
+    flexGrow: 1,
+  },
   sectionContainer: {
+    flex: 1,
     marginTop: 32,
     paddingHorizontal: 24,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
+  arView: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
   },
 });
 

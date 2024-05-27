@@ -2,6 +2,8 @@ package com.google.ar.sceneform.ux;
 
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.LayoutInflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +25,7 @@ import com.gorisse.thomas.sceneform.light.LightEstimationConfig;
  * Implements ArFragment and configures the session for using the augmented faces feature.
  */
 public class ArFrontFacingFragment extends ArFragment {
+
 
     @Override
     protected Config onCreateSessionConfig(Session session) {
