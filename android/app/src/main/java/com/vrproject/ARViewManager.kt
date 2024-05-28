@@ -6,22 +6,24 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.google.ar.core.AugmentedFace
 import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.ArSceneView
+import com.google.ar.sceneform.Node
+import com.google.ar.sceneform.math.Vector3
+import com.google.ar.sceneform.rendering.Material
+import com.google.ar.sceneform.rendering.MaterialFactory
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.Renderable
+import com.google.ar.sceneform.rendering.ShapeFactory
 import com.google.ar.sceneform.rendering.Texture
 import com.google.ar.sceneform.ux.ArFrontFacingFragment
 import com.google.ar.sceneform.ux.AugmentedFaceNode
-import com.facebook.react.bridge.ReadableArray
-import java.util.HashMap
-import java.util.HashSet
 import java.util.concurrent.CompletableFuture
+import java.util.function.Consumer
 
 class ARViewManager : SimpleViewManager<FrameLayout>() {
 
@@ -52,14 +54,14 @@ class ARViewManager : SimpleViewManager<FrameLayout>() {
         Log.d(REACT_CLASS, "Creating view instance")
         val inflater = LayoutInflater.from(reactContext)
         val layout = inflater.inflate(R.layout.arview, null) as FrameLayout
-    
+
         arFragment = ArFrontFacingFragment()
         val activity = reactContext.currentActivity as AppCompatActivity?
         activity?.let {
             Log.d(REACT_CLASS, "Activity is not null")
             val fragmentManager = it.supportFragmentManager
             val fragmentContainerId = android.R.id.content
-    
+
             val existingFragment = fragmentManager.findFragmentById(fragmentContainerId)
             if (existingFragment == null) {
                 Log.d(REACT_CLASS, "No existing fragment, creating new one")
@@ -70,16 +72,16 @@ class ARViewManager : SimpleViewManager<FrameLayout>() {
                 Log.d(REACT_CLASS, "Using existing fragment")
                 arFragment = existingFragment as ArFrontFacingFragment
             }
-    
+
             arSceneView = arFragment.arSceneView
             initializeArSceneView()
         } ?: run {
             Log.e(REACT_CLASS, "Activity is null")
         }
-    
+
         return layout
     }
-    
+
 
     private fun initializeArSceneView() {
         if (!::arSceneView.isInitialized) {
@@ -91,6 +93,7 @@ class ARViewManager : SimpleViewManager<FrameLayout>() {
         arFragment.setOnAugmentedFaceUpdateListener(this::onAugmentedFaceTrackingUpdate)
         loadModels()
         loadTextures()
+        loadBackground()
     }
 
     override fun receiveCommand(root: FrameLayout, commandId: Int, args: ReadableArray?) {
@@ -111,7 +114,11 @@ class ARViewManager : SimpleViewManager<FrameLayout>() {
             .build()
             .thenAccept { model -> faceModel = model }
             .exceptionally {
-                Toast.makeText(arSceneView.context, "Unable to load renderable", Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    arSceneView.context,
+                    "Unable to load renderable",
+                    Toast.LENGTH_LONG
+                ).show()
                 null
             })
     }
@@ -123,9 +130,43 @@ class ARViewManager : SimpleViewManager<FrameLayout>() {
             .build()
             .thenAccept { texture -> faceTexture = texture }
             .exceptionally {
-                Toast.makeText(arSceneView.context, "Unable to load texture", Toast.LENGTH_LONG).show()
+                Toast.makeText(arSceneView.context, "Unable to load texture", Toast.LENGTH_LONG)
+                    .show()
                 null
             })
+    }
+
+    private fun loadBackground() {
+        loaders.add(
+            Texture.builder().setSource(arSceneView.context,Uri.parse("backgrounds/scene_1.jpg"))
+//            Texture.builder().setSource(arSceneView.context, Uri.parse("models/dragon.glb"))
+                .setUsage(Texture.Usage.COLOR_MAP)
+                .build().thenAccept { texture: Texture? ->
+                    MaterialFactory.makeOpaqueWithTexture(arSceneView.context, texture)
+                        .thenAccept { material: Material? ->
+                            val backgroundRenderable =
+                                ShapeFactory.makeCube(
+                                    Vector3(10f, 10f, 0.1f),
+                                    Vector3.zero(),
+                                    material
+                                )
+                            val backgroundNode =
+                                Node()
+                            backgroundNode.parent = arSceneView.scene
+                            backgroundNode.setRenderable(backgroundRenderable)
+
+                            // Position the background far enough behind the face mesh
+                            backgroundNode.localPosition = Vector3(0.0f, 0.0f, -8f)
+                        }
+                        .exceptionally {
+                            Toast.makeText(
+                                arSceneView.context,
+                                "Unable to load texture",
+                                Toast.LENGTH_LONG
+                            ).show()
+                            null
+                        }
+                })
     }
 
     private fun onAugmentedFaceTrackingUpdate(augmentedFace: AugmentedFace) {
@@ -144,12 +185,14 @@ class ARViewManager : SimpleViewManager<FrameLayout>() {
                     facesNodes[augmentedFace] = faceNode
                 }
             }
+
             TrackingState.STOPPED -> {
                 if (existingFaceNode != null) {
                     arSceneView.scene.removeChild(existingFaceNode)
                     facesNodes.remove(augmentedFace)
                 }
             }
+
             else -> {}
         }
     }
