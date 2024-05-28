@@ -105,8 +105,11 @@ android {
 }
 
 dependencies {
+    var arcore_version = '1.31.0'
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
+    implementation(project(":ar_soft_scene_form")) 
+    api "com.google.ar:core:$arcore_version"
 
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
