@@ -156,7 +156,7 @@ class ARViewManager : SimpleViewManager<FrameLayout>() {
                             backgroundNode.setRenderable(backgroundRenderable)
 
                             // Position the background far enough behind the face mesh
-                            backgroundNode.localPosition = Vector3(0.0f, 0.0f, -8f)
+                            backgroundNode.localPosition = Vector3(0.0f, 0.0f, -4f)
                         }
                         .exceptionally {
                             Toast.makeText(
