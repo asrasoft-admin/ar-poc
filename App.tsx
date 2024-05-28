@@ -13,9 +13,11 @@ import {
   Text,
 } from 'react-native';
 import {Colors} from 'react-native/Libraries/NewAppScreen';
-import {requireNativeComponent} from 'react-native';
+import {requireNativeComponent, NativeModules} from 'react-native';
 
-const ARView = requireNativeComponent('ARViewManager');
+const {ARModule} = NativeModules;
+const ARView =
+  Platform.OS === 'android' ? requireNativeComponent('ARViewManager') : null;
 
 const requestCameraPermission = async () => {
   try {
@@ -46,7 +48,7 @@ const Section: React.FC = () => {
   const [view, setView] = useState(false);
 
   useEffect(() => {
-    if (arViewRef.current) {
+    if (Platform.OS === 'android' && arViewRef.current) {
       setView(true);
       console.log(arViewRef);
       UIManager.dispatchViewManagerCommand(
@@ -57,9 +59,20 @@ const Section: React.FC = () => {
     }
   }, []);
 
+  if (Platform.OS === 'ios') {
+    useEffect(() => {
+      ARModule.startARSession();
+    }, []);
+    return (
+      <View style={styles.sectionContainer}>
+        <Text>iOS AR Session Started</Text>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.sectionContainer}>
-      <ARView ref={arViewRef} />
+      {ARView && <ARView ref={arViewRef} style={styles.arView} />}
       <Text>Hello</Text>
     </View>
   );
@@ -69,7 +82,9 @@ const App: React.FC = () => {
   const isDarkMode = useColorScheme() === 'dark';
 
   useEffect(() => {
-    requestCameraPermission();
+    if (Platform.OS === 'android') {
+      requestCameraPermission();
+    }
   }, []);
 
   const backgroundStyle = {
