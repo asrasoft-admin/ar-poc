@@ -1,7 +1,6 @@
 import SwiftUI
 import RealityKit
 import ARKit
-import SceneKit
 import AVFoundation
 import UIKit
 
@@ -131,6 +130,7 @@ struct ContentView: View {
     }
 }
 
+@available(iOS 14.0, *)
 struct ARViewContainer: UIViewRepresentable {
     
     @Binding var capturedImage: UIImage?
@@ -202,57 +202,67 @@ struct ARViewContainer: UIViewRepresentable {
                     arView.scene.anchors.remove(anchor)
                 }
             }
-            if !toggleTgt {
-                if useFrontCamera {
-                    let arConfig = ARFaceTrackingConfiguration()
-                    arView.session.run(arConfig)
-                }
-                toggleTgt = true
+          if !toggleTgt {
+                        if useFrontCamera {
+                            let arConfig = ARBodyTrackingConfiguration()
+                            arView.session.run(arConfig)
+                        }
+                        toggleTgt = true
             } else {
                 if useFrontCamera {
-                    let arConfig = ARFaceTrackingConfiguration()
+                    let arConfig = ARBodyTrackingConfiguration()
                     arConfig.frameSemantics = .personSegmentation
                     arView.session.run(arConfig)
                 }
                 addTgt(arView: arView)
                 toggleTgt = false
             }
+    
         }
     }
     
   func addBenchBg(arView: ARView) {
-      guard let url = Bundle.main.url(forResource: "bench", withExtension: "usdz", subdirectory: "Preview Content") else {
-          print("Failed to find bench.usdz in the app bundle")
+      guard let videoURL = Bundle.main.url(forResource: "sampleVideo", withExtension: "mp4") else {
+          print("Failed to find samplevideo.mp4 in the app bundle")
           return
       }
-      do {
-          let backgroundScene = try Entity.load(contentsOf: url)
-          let backgroundAnchor = AnchorEntity(world: SIMD3(x: 0, y: 0, z: -1.0))
-          backgroundScene.name = "backgroundEntity"
-          backgroundScene.setScale(SIMD3(x: 1, y: 1, z: 1), relativeTo: backgroundAnchor)
-          backgroundAnchor.addChild(backgroundScene)
-          arView.scene.anchors.append(backgroundAnchor)
-      } catch {
-          print("Failed to load background model: \(error.localizedDescription)")
-      }
+
+      let player = AVPlayer(url: videoURL)
+      let videoMaterial = VideoMaterial(avPlayer: player)
+      player.play()
+
+      // Create a spherical mesh to cover the entire 360-degree space
+      let backgroundSphere = ModelEntity(mesh: .generateSphere(radius: 10), materials: [videoMaterial])
+      backgroundSphere.name = "backgroundEntity"
+
+      // Invert the sphere to view the video from inside
+      backgroundSphere.transform = Transform(scale: SIMD3<Float>(x: -1, y: 1, z: 1))
+      
+      // Place the background anchor at the origin (0, 0, 0)
+      let backgroundAnchor = AnchorEntity(world: .zero)
+      backgroundAnchor.addChild(backgroundSphere)
+      
+      // Add the background anchor to the ARView's scene
+      arView.scene.anchors.append(backgroundAnchor)
   }
 
-  func addTgt(arView: ARView) {
-      guard let url = Bundle.main.url(forResource: "tgt", withExtension: "usdz", subdirectory: "Preview Content") else {
-          print("Failed to find target.usdz in the app bundle")
-          return
-      }
-      do {
-          let targetScene = try Entity.load(contentsOf: url)
-          let targetAnchor = AnchorEntity(world: SIMD3(x: 0, y: 0, z: -1.0))
-          targetScene.name = "tgtEntity"
-          targetScene.setScale(SIMD3(x: 1, y: 1, z: 1), relativeTo: targetAnchor)
-          targetAnchor.addChild(targetScene)
-          arView.scene.anchors.append(targetAnchor)
-      } catch {
-          print("Failed to load target model: \(error.localizedDescription)")
-      }
-  }
+
+    func addTgt(arView: ARView) {
+        guard let url = Bundle.main.url(forResource: "tgt", withExtension: "usdz", subdirectory: "Preview Content") else {
+            print("Failed to find target.usdz in the app bundle")
+            return
+        }
+        do {
+            let targetScene = try Entity.load(contentsOf: url)
+            let targetAnchor = AnchorEntity(world: SIMD3(x: 0, y: 0, z: -1.0))
+            targetScene.name = "tgtEntity"
+            targetScene.setScale(SIMD3(x: 1, y: 1, z: 1), relativeTo: targetAnchor)
+            targetAnchor.addChild(targetScene)
+            arView.scene.anchors.append(targetAnchor)
+        } catch {
+            print("Failed to load target model: \(error.localizedDescription)")
+        }
+    }
     
     @MainActor func addGlasses(arView: ARView) {
         if let faceScene = try? Glasses.loadFace() {
@@ -292,3 +302,4 @@ struct ARViewContainer: UIViewRepresentable {
     
     func updateUIView(_ uiView: ARView, context: Context) {}
 }
+

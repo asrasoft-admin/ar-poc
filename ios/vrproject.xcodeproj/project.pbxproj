@@ -15,6 +15,8 @@
 		7699B88040F8A987B510C191 /* libPods-vrproject-vrprojectTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-vrproject-vrprojectTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9725D20DD39151265A027587 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = EDAC5EF5862132FEC050CBE1 /* PrivacyInfo.xcprivacy */; };
+		DA634AFE2C08A2D50079E329 /* SampleVideo2.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = DA634AFD2C08A2D50079E329 /* SampleVideo2.mp4 */; };
+		DA77C1A02C0768110076A3E3 /* sampleVideo.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = DA77C19F2C0768110076A3E3 /* sampleVideo.mp4 */; };
 		E225BBD52BFF9E1B00D4532B /* ARModule.swift in Sources */ = {isa = PBXBuildFile; fileRef = E225BBD42BFF9E1B00D4532B /* ARModule.swift */; };
 		E225BBD72BFF9E7D00D4532B /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E225BBD62BFF9E7D00D4532B /* ContentView.swift */; };
 		E245CD6C2BFFA450006F9ACE /* Preview Content in Resources */ = {isa = PBXBuildFile; fileRef = E245CD692BFFA44F006F9ACE /* Preview Content */; };
@@ -51,6 +53,8 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-vrproject.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-vrproject.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = vrproject/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-vrproject-vrprojectTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-vrproject-vrprojectTests.release.xcconfig"; path = "Target Support Files/Pods-vrproject-vrprojectTests/Pods-vrproject-vrprojectTests.release.xcconfig"; sourceTree = "<group>"; };
+		DA634AFD2C08A2D50079E329 /* SampleVideo2.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = SampleVideo2.mp4; sourceTree = "<group>"; };
+		DA77C19F2C0768110076A3E3 /* sampleVideo.mp4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = sampleVideo.mp4; sourceTree = "<group>"; };
 		E225BBD32BFF9E1B00D4532B /* vrproject-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "vrproject-Bridging-Header.h"; sourceTree = "<group>"; };
 		E225BBD42BFF9E1B00D4532B /* ARModule.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ARModule.swift; path = native_modules/ARModule/ARModule.swift; sourceTree = "<group>"; };
 		E225BBD62BFF9E7D00D4532B /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ContentView.swift; path = native_modules/ARModule/ContentView.swift; sourceTree = "<group>"; };
@@ -137,6 +141,8 @@
 			children = (
 				E245CD782BFFAF4F006F9ACE /* ARModule.h */,
 				E245CD752BFFA92A006F9ACE /* ARModuleBridge.m */,
+				DA634AFD2C08A2D50079E329 /* SampleVideo2.mp4 */,
+				DA77C19F2C0768110076A3E3 /* sampleVideo.mp4 */,
 				E245CD6A2BFFA450006F9ACE /* Glasses.rcproject */,
 				E245CD6B2BFFA450006F9ACE /* PartyGlasses.rcproject */,
 				E245CD692BFFA44F006F9ACE /* Preview Content */,
@@ -269,7 +275,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				E245CD6C2BFFA450006F9ACE /* Preview Content in Resources */,
+				DA77C1A02C0768110076A3E3 /* sampleVideo.mp4 in Resources */,
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
+				DA634AFE2C08A2D50079E329 /* SampleVideo2.mp4 in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				9725D20DD39151265A027587 /* PrivacyInfo.xcprivacy in Resources */,
 			);
@@ -280,7 +288,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */ = {
 			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
+			buildActionMask = 12;
 			files = (
 			);
 			inputPaths = (
@@ -502,7 +510,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6SC3GY22S4;
+				DEVELOPMENT_TEAM = YS5ZY4T626;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = vrproject/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -531,7 +539,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 6SC3GY22S4;
+				DEVELOPMENT_TEAM = YS5ZY4T626;
 				INFOPLIST_FILE = vrproject/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
