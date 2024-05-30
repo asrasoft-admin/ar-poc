@@ -237,11 +237,11 @@ struct ARViewContainer: UIViewRepresentable {
 //
 //      // Invert the sphere to view the video from inside
 //      backgroundSphere.transform = Transform(scale: SIMD3<Float>(x: -1, y: 1, z: 1))
-//      
+//
 //      // Place the background anchor at the origin (0, 0, 0)
 //      let backgroundAnchor = AnchorEntity(world: .zero)
 //      backgroundAnchor.addChild(backgroundSphere)
-//      
+//
 //      // Add the background anchor to the ARView's scene
 //      arView.scene.anchors.append(backgroundAnchor)
 //  }
@@ -337,4 +337,5 @@ struct ARViewContainer: UIViewRepresentable {
     
     func updateUIView(_ uiView: ARView, context: Context) {}
 }
+
 
