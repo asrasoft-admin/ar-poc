@@ -221,32 +221,63 @@ struct ARViewContainer: UIViewRepresentable {
         }
     }
     
+//  func addBenchBg(arView: ARView) {
+//      guard let videoURL = Bundle.main.url(forResource: "SampleVideo2", withExtension: "mp4") else {
+//          print("Failed to find samplevideo.mp4 in the app bundle")
+//          return
+//      }
+//
+//      let player = AVPlayer(url: videoURL)
+//      let videoMaterial = VideoMaterial(avPlayer: player)
+//      player.play()
+//
+//      // Create a spherical mesh to cover the entire 360-degree space
+//      let backgroundSphere = ModelEntity(mesh: .generateSphere(radius: 10), materials: [videoMaterial])
+//      backgroundSphere.name = "backgroundEntity"
+//
+//      // Invert the sphere to view the video from inside
+//      backgroundSphere.transform = Transform(scale: SIMD3<Float>(x: -1, y: 1, z: 1))
+//      
+//      // Place the background anchor at the origin (0, 0, 0)
+//      let backgroundAnchor = AnchorEntity(world: .zero)
+//      backgroundAnchor.addChild(backgroundSphere)
+//      
+//      // Add the background anchor to the ARView's scene
+//      arView.scene.anchors.append(backgroundAnchor)
+//  }
+
   func addBenchBg(arView: ARView) {
-      guard let videoURL = Bundle.main.url(forResource: "sampleVideo", withExtension: "mp4") else {
-          print("Failed to find samplevideo.mp4 in the app bundle")
-          return
-      }
-
+         guard let videoURL = Bundle.main.url(forResource: "SampleVideo2", withExtension: "mp4") else {
+             print("Failed to find samplevideo.mp4 in the app bundle")
+             return
+         }
       let player = AVPlayer(url: videoURL)
-      let videoMaterial = VideoMaterial(avPlayer: player)
-      player.play()
+        
+         player.actionAtItemEnd = .none
+         
+         // Observe when the player reaches the end
+    NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: player.currentItem, queue: .main) { _ in
+            player.seek(to: CMTime.zero)
+            player.play()
+         }
 
-      // Create a spherical mesh to cover the entire 360-degree space
-      let backgroundSphere = ModelEntity(mesh: .generateSphere(radius: 10), materials: [videoMaterial])
-      backgroundSphere.name = "backgroundEntity"
+    let videoMaterial = VideoMaterial(avPlayer: player)
+    player.play()
 
-      // Invert the sphere to view the video from inside
-      backgroundSphere.transform = Transform(scale: SIMD3<Float>(x: -1, y: 1, z: 1))
-      
-      // Place the background anchor at the origin (0, 0, 0)
-      let backgroundAnchor = AnchorEntity(world: .zero)
-      backgroundAnchor.addChild(backgroundSphere)
-      
-      // Add the background anchor to the ARView's scene
-      arView.scene.anchors.append(backgroundAnchor)
-  }
+         // Create a spherical mesh to cover the entire 360-degree space
+         let backgroundSphere = ModelEntity(mesh: .generateSphere(radius: 10), materials: [videoMaterial])
+         backgroundSphere.name = "backgroundEntity"
 
-
+         // Invert the sphere to view the video from inside
+         backgroundSphere.transform = Transform(scale: SIMD3<Float>(x: -1, y: 1, z: 1))
+         
+         // Place the background anchor at the origin (0, 0, 0)
+         let backgroundAnchor = AnchorEntity(world: .zero)
+         backgroundAnchor.addChild(backgroundSphere)
+         
+         // Add the background anchor to the ARView's scene
+         arView.scene.anchors.append(backgroundAnchor)
+     }
     func addTgt(arView: ARView) {
         guard let url = Bundle.main.url(forResource: "tgt", withExtension: "usdz", subdirectory: "Preview Content") else {
             print("Failed to find target.usdz in the app bundle")
@@ -282,12 +313,16 @@ struct ARViewContainer: UIViewRepresentable {
             addGlasses(arView: arView)
             addBenchBg(arView: arView)
             arView.session.run(arConfig)
+          
         } else {
             let arConfig = ARWorldTrackingConfiguration()
             arConfig.frameSemantics = .personSegmentationWithDepth
             arConfig.userFaceTrackingEnabled = true
             arConfig.planeDetection = [.horizontal, .vertical]
             arView.session.run(arConfig)
+          
+          
+      
         }
     }
     
